@@ -3,6 +3,8 @@ export const STATUS = {
   doctor: ["Available", "In Surgery", "On Leave"],
   appointment: ["Scheduled", "Completed", "Cancelled"],
   billing: ["Paid", "Pending", "Overdue"],
+  lab: ["Pending", "Completed"],
+  pharmacy: ["Active", "Inactive"],
 };
 
 export const BADGE_VARIANTS = {
@@ -18,6 +20,7 @@ export const BADGE_VARIANTS = {
   Paid: "success",
   Pending: "warning",
   Overdue: "danger",
+  Inactive: "danger",
 };
 
 export const THEME = {

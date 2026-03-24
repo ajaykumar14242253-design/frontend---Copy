@@ -1,17 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import api from "../lib/api";
-import { appointments as fallbackAppointments } from "../data/appointments";
-
-const mapFallback = () =>
-  fallbackAppointments.map((a) => ({
-    ...a,
-    patient_name: a.patient || a.patient_name,
-    doctor_name: a.doctor || a.doctor_name,
-    appointment_date: a.date
-      ? `${a.date}T${a.time || "09:00"}:00`
-      : a.appointment_date,
-  }));
 
 export default function useAppointments(params = {}) {
   const queryClient = useQueryClient();
@@ -21,21 +10,8 @@ export default function useAppointments(params = {}) {
     retry: false,
     staleTime: 30000,
     queryFn: async () => {
-      try {
-        const { data } = await api.get("/appointments", { params });
-        return data?.data;
-      } catch {
-        const items = mapFallback();
-        return {
-          items,
-          pagination: {
-            total: items.length,
-            page: 1,
-            limit: 200,
-            pages: 1,
-          },
-        };
-      }
+      const { data } = await api.get("/appointments", { params });
+      return data?.data;
     },
   });
 

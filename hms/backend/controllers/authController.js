@@ -12,6 +12,13 @@ import { query } from "../config/db.js";
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
+    if (!req.user && role === "admin") {
+      return res.status(403).json({
+        success: false,
+        data: null,
+        message: "Admin accounts can only be created by an authenticated admin",
+      });
+    }
     const existing = await query("SELECT id FROM users WHERE email = $1", [email]);
     if (existing.rows.length) {
       return res.status(409).json({ success: false, data: null, message: "Email already registered" });
