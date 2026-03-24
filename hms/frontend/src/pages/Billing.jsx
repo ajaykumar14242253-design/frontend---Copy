@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,6 +37,7 @@ import useBilling from "../hooks/useBilling";
 import usePatients from "../hooks/usePatients";
 import useDoctors from "../hooks/useDoctors";
 import useAppointments from "../hooks/useAppointments";
+import { useAuth } from "../context/AuthContext";
 import { BADGE_VARIANTS } from "../utils/constants";
 import { downloadCSV, formatCurrency, formatDate } from "../utils/helpers";
 
@@ -56,6 +57,8 @@ const schema = z.object({
 const paymentMethods = ["Cash", "Card", "UPI", "Insurance", "Bank Transfer"];
 
 export default function Billing() {
+  const { user } = useAuth();
+  const isStaff = user?.role === "staff";
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFrom, setDateFrom] = useState("");
@@ -73,6 +76,7 @@ export default function Billing() {
   const {
     data,
     isLoading,
+    error,
     createBilling,
     updateBilling,
     deleteBilling,
@@ -283,6 +287,11 @@ export default function Billing() {
 
       {isLoading ? (
         <LoadingSkeleton rows={6} />
+      ) : error ? (
+        <EmptyState
+          title="Billing unavailable"
+          description={error.message || "Unable to load billing records."}
+        />
       ) : filteredRecords.length === 0 ? (
         <EmptyState title="No invoices" description="No billing records found." />
       ) : (
@@ -323,7 +332,7 @@ export default function Billing() {
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-2">
-                      {record?.status !== "Paid" ? (
+                      {!isStaff && record?.status !== "Paid" ? (
                         <Button variant="outline" onClick={() => setPaymentModal(record)}>
                           Mark Paid
                         </Button>
@@ -331,9 +340,11 @@ export default function Billing() {
                       <Button variant="outline" onClick={() => window.print()}>
                         Print
                       </Button>
-                      <Button variant="destructive" onClick={() => setConfirmDelete(record)}>
-                        Delete
-                      </Button>
+                      {!isStaff ? (
+                        <Button variant="destructive" onClick={() => setConfirmDelete(record)}>
+                          Delete
+                        </Button>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -409,7 +420,7 @@ export default function Billing() {
                 <SelectContent>
                   {appointments.map((appt) => (
                     <SelectItem key={appt?.id} value={String(appt?.id)}>
-                      {appt?.patient_name || appt?.patient} � {formatDate(appt?.appointment_date)}
+                      {appt?.patient_name || appt?.patient} · {formatDate(appt?.appointment_date)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -495,7 +506,10 @@ export default function Billing() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={Boolean(paymentModal)} onOpenChange={(value) => !value && setPaymentModal(null)}>
+      <Dialog
+        open={!isStaff && Boolean(paymentModal)}
+        onOpenChange={(value) => !value && setPaymentModal(null)}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Mark Invoice as Paid</DialogTitle>
@@ -542,14 +556,17 @@ export default function Billing() {
         </DialogContent>
       </Dialog>
 
-      <ConfirmDialog
-        open={Boolean(confirmDelete)}
-        onOpenChange={(value) => !value && setConfirmDelete(null)}
-        title="Delete invoice?"
-        description="This will remove the invoice record."
-        confirmText="Delete"
-        onConfirm={handleDelete}
-      />
+      {!isStaff ? (
+        <ConfirmDialog
+          open={Boolean(confirmDelete)}
+          onOpenChange={(value) => !value && setConfirmDelete(null)}
+          title="Delete invoice?"
+          description="This will remove the invoice record."
+          confirmText="Delete"
+          onConfirm={handleDelete}
+        />
+      ) : null}
     </div>
   );
 }
+

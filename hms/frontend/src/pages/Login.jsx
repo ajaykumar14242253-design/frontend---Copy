@@ -135,6 +135,10 @@ export default function Login() {
               {form.formState.isSubmitting ? "Signing in..." : "Sign In"}
             </Button>
 
+            <Button asChild type="button" variant="outline" className="w-full">
+              <Link to="/role-based-login">Role Based Login</Link>
+            </Button>
+
             <div className="rounded-lg bg-sky-50 p-3 text-sm text-slate-600">
               <p className="font-medium text-slate-700">Demo Credentials</p>
               <p>Email: admin@medicare.com</p>

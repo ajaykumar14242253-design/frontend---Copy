@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import api from "../lib/api";
-import { patients as fallbackPatients } from "../data/patients";
 
 export default function usePatients(params = {}) {
   const queryClient = useQueryClient();
@@ -11,20 +10,8 @@ export default function usePatients(params = {}) {
     retry: false,
     staleTime: 30000,
     queryFn: async () => {
-      try {
-        const { data } = await api.get("/patients", { params });
-        return data?.data;
-      } catch {
-        return {
-          items: fallbackPatients,
-          pagination: {
-            total: fallbackPatients.length,
-            page: 1,
-            limit: 200,
-            pages: 1,
-          },
-        };
-      }
+      const { data } = await api.get("/patients", { params });
+      return data?.data;
     },
   });
 

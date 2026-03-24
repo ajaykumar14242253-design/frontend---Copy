@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+﻿import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,7 +16,7 @@ import ConfirmDialog from "../components/shared/ConfirmDialog";
 import Pagination from "../components/shared/Pagination";
 import EmptyState from "../components/shared/EmptyState";
 import useDebounce from "../hooks/useDebounce";
-import { usePatients } from "../hooks/usePatients";
+import usePatients from "../hooks/usePatients";
 import { BADGE_VARIANTS, STATUS } from "../utils/constants";
 import { compareStrings } from "../utils/helpers";
 
@@ -44,7 +44,7 @@ export default function Patients() {
 
   const debouncedSearch = useDebounce(search, 300);
 
-  const { data, isLoading, createPatient, updatePatient, deletePatient, creating, updating } = usePatients({
+  const { data, isLoading, error, createPatient, updatePatient, deletePatient, creating, updating } = usePatients({
     page: 1,
     limit: 200,
     search: debouncedSearch,
@@ -263,6 +263,13 @@ export default function Patients() {
           <div className="p-6">
             <LoadingSkeleton rows={6} />
           </div>
+        ) : error ? (
+          <div className="p-6">
+            <EmptyState
+              title="Patients unavailable"
+              description={error.message || "Unable to load patients from the server."}
+            />
+          </div>
         ) : pagedPatients.length === 0 ? (
           <div className="p-6">
             <EmptyState title="No patients" message="Try adjusting filters or add a new patient." />
@@ -330,3 +337,4 @@ export default function Patients() {
 Patients.propTypes = {
   initialPage: PropTypes.number,
 };
+

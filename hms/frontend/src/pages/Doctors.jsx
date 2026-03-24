@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+﻿import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -64,6 +64,7 @@ const specializations = [
 ];
 
 const availabilityOptions = ["Available", "In Surgery", "On Leave"];
+const getRatingValue = (doctor) => Number(doctor?.rating ?? 0);
 
 export default function Doctors() {
   const [search, setSearch] = useState("");
@@ -80,6 +81,7 @@ export default function Doctors() {
   const {
     data,
     isLoading,
+    error,
     createDoctor,
     updateDoctor,
     deleteDoctor,
@@ -106,7 +108,7 @@ export default function Doctors() {
       items.sort((a, b) => (b?.experience || 0) - (a?.experience || 0));
     }
     if (sortBy === "rating") {
-      items.sort((a, b) => (b?.rating || 0) - (a?.rating || 0));
+      items.sort((a, b) => getRatingValue(b) - getRatingValue(a));
     }
     return items;
   }, [doctors, specializationFilter, availabilityFilter, sortBy]);
@@ -151,7 +153,7 @@ export default function Doctors() {
         phone: doctor?.phone || "",
         email: doctor?.email || "",
         availability: doctor?.availability || "Available",
-        rating: doctor?.rating || 0,
+        rating: getRatingValue(doctor),
         bio: doctor?.bio || "",
       });
       setOpen(true);
@@ -261,6 +263,11 @@ export default function Doctors() {
 
       {isLoading ? (
         <LoadingSkeleton rows={6} />
+      ) : error ? (
+        <EmptyState
+          title="Doctors unavailable"
+          description={error.message || "Unable to load doctor records."}
+        />
       ) : filteredDoctors.length === 0 ? (
         <EmptyState title="No doctors found" description="Try adjusting your filters." />
       ) : viewMode === "grid" ? (
@@ -284,7 +291,7 @@ export default function Doctors() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="h-4 w-4 text-amber-400" />
-                  {(doctor?.rating || 0).toFixed(1)} / 5.0
+                  {getRatingValue(doctor).toFixed(1)} / 5.0
                 </div>
               </div>
               <div className="mt-3">
@@ -330,7 +337,7 @@ export default function Doctors() {
                   <TableCell className="font-medium">{doctor?.name}</TableCell>
                   <TableCell>{doctor?.specialization}</TableCell>
                   <TableCell>{doctor?.experience || 0} yrs</TableCell>
-                  <TableCell>{(doctor?.rating || 0).toFixed(1)}</TableCell>
+                  <TableCell>{getRatingValue(doctor).toFixed(1)}</TableCell>
                   <TableCell>
                     <Badge variant={BADGE_VARIANTS[doctor?.availability] || "secondary"}>
                       {doctor?.availability || "Available"}
@@ -479,3 +486,4 @@ export default function Doctors() {
     </div>
   );
 }
+

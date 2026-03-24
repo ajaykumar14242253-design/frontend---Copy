@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+﻿import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
@@ -16,7 +16,7 @@ export default function PatientDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["patient", id],
     queryFn: async () => {
       const response = await api.get(`/patients/${id}`);
@@ -30,6 +30,14 @@ export default function PatientDetail() {
   }
 
   if (!data) {
+    if (error) {
+      return (
+        <EmptyState
+          title="Patient unavailable"
+          message={error.message || "Unable to load patient details."}
+        />
+      );
+    }
     return <EmptyState title="Patient not found" message="Try another patient." />;
   }
 
@@ -81,3 +89,4 @@ export default function PatientDetail() {
     </div>
   );
 }
+

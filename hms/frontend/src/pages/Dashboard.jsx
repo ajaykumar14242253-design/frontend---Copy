@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Bar,
@@ -107,6 +107,19 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {patients.error || doctors.error || appointments.error || billing.error ? (
+        <EmptyState
+          title="Dashboard data unavailable"
+          description={
+            patients.error?.message ||
+            doctors.error?.message ||
+            appointments.error?.message ||
+            billing.error?.message ||
+            "Unable to load dashboard data."
+          }
+        />
+      ) : null}
+
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
@@ -282,3 +295,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

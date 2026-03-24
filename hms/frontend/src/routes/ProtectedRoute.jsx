@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { HOME_BY_ROLE } from "../utils/roles";
 
-export default function ProtectedRoute({ children, roles }) {
+export default function ProtectedRoute({ children, roles = [] }) {
   const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
@@ -21,7 +22,7 @@ export default function ProtectedRoute({ children, roles }) {
   }
 
   if (roles?.length > 0 && !roles.includes(user?.role)) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={HOME_BY_ROLE[user?.role] || "/"} replace />;
   }
 
   return children;
@@ -30,8 +31,4 @@ export default function ProtectedRoute({ children, roles }) {
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
   roles: PropTypes.arrayOf(PropTypes.string),
-};
-
-ProtectedRoute.defaultProps = {
-  roles: [],
 };

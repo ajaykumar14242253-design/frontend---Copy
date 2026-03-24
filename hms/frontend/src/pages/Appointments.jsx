@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+﻿import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -88,6 +88,7 @@ export default function Appointments() {
   const {
     data,
     isLoading,
+    error,
     createAppointment,
     updateAppointment,
     deleteAppointment,
@@ -344,6 +345,11 @@ export default function Appointments() {
 
       {isLoading ? (
         <LoadingSkeleton rows={5} />
+      ) : error ? (
+        <EmptyState
+          title="Appointments unavailable"
+          description={error.message || "Unable to load appointment data."}
+        />
       ) : filteredAppointments.length === 0 ? (
         <EmptyState title="No appointments" description="No appointments match your filters." />
       ) : viewMode === "list" ? (
@@ -476,7 +482,7 @@ export default function Appointments() {
                       {appt?.patient_name || appt?.patient}
                     </p>
                     <p className="text-slate-500">
-                      {appt?.doctor_name || appt?.doctor} � {formatDateTime(appt?.appointment_date)}
+                      {appt?.doctor_name || appt?.doctor} · {formatDateTime(appt?.appointment_date)}
                     </p>
                   </div>
                 ))}
@@ -669,3 +675,4 @@ export default function Appointments() {
     </div>
   );
 }
+
