@@ -18,7 +18,9 @@
     "test:database": "node run-tests.js database",
     "test:coverage": "node run-tests.js coverage",
     "test:watch": "node run-tests.js watch",
-    "test:report": "node run-tests.js report"
+    "test:report": "node run-tests.js report",
+    "test:core": "node run-tests.js core",
+    "test:api": "node run-tests.js api"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

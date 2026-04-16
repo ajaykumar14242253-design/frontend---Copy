@@ -27,6 +27,7 @@ import prescriptionRoutes from "./routes/prescriptions.js";
 import activityRoutes from "./routes/activity.js";
 import userRoutes from "./routes/users.js";
 import patientReportRoutes from "./routes/patientReports.js";
+import coreRoutes from "./routes/core.js";
 
 dotenv.config();
 
@@ -150,6 +151,7 @@ app.use("/api/v1/prescriptions", prescriptionRoutes);
 app.use("/api/v1/activity", activityRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/patient-reports", patientReportRoutes);
+app.use("/api/v1/core", coreRoutes);
 
 app.use((req, res) => {
   // Ensure CORS headers for 404 responses
